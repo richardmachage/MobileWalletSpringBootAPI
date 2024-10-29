@@ -1,9 +1,14 @@
 package com.comulynx.wallet.rest.api.controller;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 import javax.validation.Valid;
 
+import com.comulynx.wallet.rest.api.exception.CustomerExistsException;
+import net.bytebuddy.implementation.bytecode.Throw;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,15 +100,25 @@ public class CustomerController {
 			//  : Add logic to check if Customer with provided email, or
 			// customerId exists. If exists, throw a Customer with [?] exists
 			// Exception.
+			Optional<Customer> customerInDb = customerRepository.findByCustomerId(customer.getCustomerId());
 
-			String accountNo = generateAccountNo(customer.getCustomerId());
-			Account account = new Account();
-			account.setCustomerId(customer.getCustomerId());
-			account.setAccountNo(accountNo);
-			account.setBalance(0.0);
-			accountRepository.save(account);
 
-			return ResponseEntity.ok().body(customerRepository.save(customer));
+			if (
+					customerInDb.isPresent() || customerRepository.existsByEmail(customer.getEmail())
+			){
+				throw new CustomerExistsException();
+			}
+			else {
+				String accountNo = generateAccountNo(customer.getCustomerId());
+				Account account = new Account();
+				account.setCustomerId(customer.getCustomerId());
+				account.setAccountNo(accountNo);
+				account.setBalance(0.0);
+				accountRepository.save(account);
+
+				return ResponseEntity.ok().body(customerRepository.save(customer));
+			}
+
 		} catch (Exception ex) {
 			logger.info("Exception {}", AppUtilities.getExceptionStacktrace(ex));
 
@@ -120,8 +135,37 @@ public class CustomerController {
 	 * 
 	 */
 	private String generateAccountNo(String customerId) {
-		// TODO : Add logic here - generate a random but unique Account No (NB:
+		// TODO : Add logic here - generate a random but unique Account No (NB: -> done
 		// Account No should be unique in the accounts table)
-		return "";
+		/*
+		1. create random account
+		2. check if it exists
+		3. retry until account is unique (recursion)
+		*/
+		Random random = new Random();
+		StringBuilder accountNo =  new StringBuilder("ACT") ;//+ num1 + num2 + num3 + num4;
+
+		for (int i = 0; i<4 ;i++){
+			accountNo.append(random.nextInt(10));
+		}
+
+		if (checkIfAccountExists(accountNo.toString())){
+			return generateAccountNo(customerId);
+		}
+		else {
+			return accountNo.toString();
+		}
+	}
+
+
+
+	private Boolean checkIfAccountExists(String accountNo){
+		Optional<Account> account = accountRepository.findAccountByAccountNo(accountNo);
+		return account.isPresent();
+	}
+
+	private Boolean isCustomerExist(String customerId){
+		Optional<Customer> customer = customerRepository.findByCustomerId(customerId);
+		return customer.isPresent();
 	}
 }

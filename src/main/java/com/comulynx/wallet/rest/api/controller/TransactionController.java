@@ -60,7 +60,7 @@ public class TransactionController {
 			final JsonObject req = gson.fromJson(request, JsonObject.class);
 			String customerId = req.get("customerId").getAsString();
 
-			// TODO : Add login here to get Last 100 Transactions By CustomerId
+			// TODO : Add login here to get Last 100 Transactions By CustomerId ->  done
 			Optional<List<Transaction>> last100Transactions = transactionRepository.findTransactionsByCustomerId(customerId);//null;
 
 			if (last100Transactions.isPresent()){
