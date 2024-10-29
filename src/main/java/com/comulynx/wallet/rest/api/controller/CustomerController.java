@@ -76,12 +76,12 @@ public class CustomerController {
 					//TODO : Return a JSON object with the following after successful login -> done
 					//Customer Name, Customer ID, email and Customer Account
 					Map<String, Object> customerDetails = new HashMap<>();
-					response.addProperty("firstName", customer.get().getFirstName());
-					response.addProperty("lastName", customer.get().getLastName());
-					response.addProperty("customerId", customer.get().getCustomerId());
-					response.addProperty("email", customer.get().getEmail());
+					customerDetails.put("firstName", customer.get().getFirstName());
+					customerDetails.put("lastName", customer.get().getLastName());
+					customerDetails.put("customerId", customer.get().getCustomerId());
+					customerDetails.put("email", customer.get().getEmail());
 
-					return ResponseEntity.status(HttpStatus.OK).body(response);
+					return ResponseEntity.status(HttpStatus.OK).body(customerDetails);
 				}else {
 					//wrong pin
 					return new ResponseEntity<>("Wrong Pin", HttpStatus.UNAUTHORIZED);
