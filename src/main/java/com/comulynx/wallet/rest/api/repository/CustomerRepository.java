@@ -32,4 +32,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	// TODO : Implement the query and function below and to return all customers whose Email contains  'gmail' -> done
 	@Query("SELECT c FROM Customer c WHERE c.email LIKE '%gmail%' ")
 	List<Customer> findAllCustomersWhoseEmailContainsGmail();
+
+
 }

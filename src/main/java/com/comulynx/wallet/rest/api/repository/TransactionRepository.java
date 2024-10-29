@@ -20,7 +20,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 	Optional<List<Transaction>> findTransactionsByCustomerIdOrTransactionId(String transactionId, String customerId);
 
-	// TODO : Change below Query to return the last 5 transactions
+	// TODO : Change below Query to return the last 5 transactions -> done
 	// TODO : Change below Query to use Named parameters instead of indexed parameters -> done
 	// TODO : Change below function to return Optional<List<Transaction>> -> done
 	@Query("SELECT t FROM Transaction t WHERE t.customerId = :customer_id AND  t.accountNo = :account_no")

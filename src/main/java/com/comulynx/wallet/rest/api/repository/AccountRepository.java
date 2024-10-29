@@ -12,7 +12,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	Optional<Account> findAccountByCustomerId(String customerId);
 
-	Optional<Account> findAccountByAccountNo(String customerId);
+	Optional<Account> findAccountByAccountNo(String accountNo);
 
 	Optional<Account> findAccountByCustomerIdOrAccountNo(String customerId, String accountNo);
 	

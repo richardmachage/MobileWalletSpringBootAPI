@@ -1,6 +1,7 @@
 package com.comulynx.wallet.rest.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,14 +46,21 @@ public class AccountController {
 
 			final JsonObject balanceRequest = gson.fromJson(request, JsonObject.class);
 			String customerId = balanceRequest.get("customerId").getAsString();
+			String accountNo = balanceRequest.get("accountNo").getAsString();
 
 
 			// TODO : Add logic to find Account balance by CustomerId
-			Account account = null;
+			Optional<Account> account = accountRepository.findAccountByCustomerIdAndAccountNo(customerId, accountNo);
 
-			response.addProperty("balance", account.getBalance());
-			response.addProperty("accountNo", account.getAccountNo());
-			return ResponseEntity.ok().body(gson.toJson(response));
+			if (account.isPresent()){
+				response.addProperty("balance", account.get().getBalance());
+				response.addProperty("accountNo", account.get().getAccountNo());
+				return ResponseEntity.ok().body(gson.toJson(response));
+			}
+			else {
+				return new ResponseEntity<>("Account does not exist",HttpStatus.NOT_FOUND);
+			}
+
 		} catch (Exception ex) {
 			logger.info("Exception {}", AppUtilities.getExceptionStacktrace(ex));
 

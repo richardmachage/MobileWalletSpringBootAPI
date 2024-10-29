@@ -1,8 +1,6 @@
 package com.comulynx.wallet.rest.api.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import javax.validation.Valid;
 
@@ -69,11 +67,33 @@ public class CustomerController {
 			// NB: We are using plain text password for testing Customer login
 			// If customerId doesn't exists throw an error "Customer does not exist"
 			// If password do not match throw an error "Invalid credentials"
-			
-			//TODO : Return a JSON object with the following after successful login
-			//Customer Name, Customer ID, email and Customer Account 
+			Optional<Customer> customer = customerRepository.findByCustomerId(customerId);
 
-			return ResponseEntity.status(200).body(HttpStatus.OK);
+			if (customer.isPresent()){
+				//log in logic
+				if (customerPIN.equals(customer.get().getPin())){
+					//correct PIN
+					//TODO : Return a JSON object with the following after successful login -> done
+					//Customer Name, Customer ID, email and Customer Account
+					Map<String, Object> customerDetails = new HashMap<>();
+					response.addProperty("firstName", customer.get().getFirstName());
+					response.addProperty("lastName", customer.get().getLastName());
+					response.addProperty("customerId", customer.get().getCustomerId());
+					response.addProperty("email", customer.get().getEmail());
+
+					return ResponseEntity.status(HttpStatus.OK).body(response);
+				}else {
+					//wrong pin
+					return new ResponseEntity<>("Wrong Pin", HttpStatus.UNAUTHORIZED);
+				}
+			}else {
+				//customer not present return
+				return new ResponseEntity<>("Account does not exist",HttpStatus.NOT_FOUND);
+			}
+
+
+
+			//return ResponseEntity.status(200).body(HttpStatus.OK);
 
 		} catch (Exception ex) {
 			logger.info("Exception {}", AppUtilities.getExceptionStacktrace(ex));
