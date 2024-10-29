@@ -49,7 +49,7 @@ public class AccountController {
 			String accountNo = balanceRequest.get("accountNo").getAsString();
 
 
-			// TODO : Add logic to find Account balance by CustomerId
+			// TODO : Add logic to find Account balance by CustomerId->done
 			Optional<Account> account = accountRepository.findAccountByCustomerIdAndAccountNo(customerId, accountNo);
 
 			if (account.isPresent()){
