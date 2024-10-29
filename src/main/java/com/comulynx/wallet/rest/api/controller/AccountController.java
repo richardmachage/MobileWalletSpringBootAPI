@@ -37,7 +37,6 @@ public class AccountController {
 		return accountRepository.findAll();
 	}
 
-	
 	@PostMapping("/balance")
 	public ResponseEntity<?> getAccountBalanceByCustomerIdAndAccountNo(@RequestBody String request)
 			throws ResourceNotFoundException {
