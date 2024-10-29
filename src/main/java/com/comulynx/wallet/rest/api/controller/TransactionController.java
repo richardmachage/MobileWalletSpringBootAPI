@@ -1,7 +1,10 @@
 package com.comulynx.wallet.rest.api.controller;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +60,21 @@ public class TransactionController {
 			final JsonObject req = gson.fromJson(request, JsonObject.class);
 			String customerId = req.get("customerId").getAsString();
 
-			// TODO : Add login here to get Last 100 Transactions By CustomerId
-			List<Transaction> last100Transactions = null;
+			// TODO : Add login here to get Last 100 Transactions By CustomerId ->  done
+			Optional<List<Transaction>> last100Transactions = transactionRepository.findTransactionsByCustomerId(customerId);//null;
 
-			return ResponseEntity.ok().body(gson.toJson(last100Transactions));
+			if (last100Transactions.isPresent()){
+				List<Transaction> listOf100Transaction = last100Transactions.get().stream()
+						.sorted(Comparator.comparing(Transaction::getTransactionId).reversed())
+						.limit(100)
+						.collect(Collectors.toList());
+
+				return ResponseEntity.ok().body(gson.toJson(listOf100Transaction));
+			}
+			else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+
 		} catch (Exception ex) {
 			logger.info("Exception {}", AppUtilities.getExceptionStacktrace(ex));
 
@@ -145,11 +159,20 @@ public class TransactionController {
 			String customerId = balanceRequest.get("customerId").getAsString();
 			String accountNo = balanceRequest.get("accountNo").getAsString();
 
-			// FIXME: Should return last 5 transactions from the database
-			List<Transaction> miniStatement = transactionRepository
+			// FIXME: Should return last 5 transactions from the database -> done
+			Optional<List<Transaction>> miniStatement = transactionRepository
 					.getMiniStatementUsingCustomerIdAndAccountNo(customerId, accountNo);
 
-			return ResponseEntity.ok().body(gson.toJson(miniStatement));
+			if (miniStatement.isPresent()){
+				List<Transaction> listOf5Transactions = miniStatement.get().stream()
+						.sorted(Comparator.comparing(Transaction::getTransactionId).reversed())
+						.limit(5)
+						.collect(Collectors.toList());
+				return ResponseEntity.ok().body(gson.toJson(listOf5Transactions));
+			}
+			else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
 		} catch (Exception ex) {
 			logger.info("Exception {}", AppUtilities.getExceptionStacktrace(ex));
 
