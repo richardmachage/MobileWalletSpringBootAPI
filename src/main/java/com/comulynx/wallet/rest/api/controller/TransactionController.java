@@ -68,11 +68,15 @@ public class TransactionController {
 						.sorted(Comparator.comparing(Transaction::getTransactionId).reversed())
 						.limit(100)
 						.collect(Collectors.toList());
-
-				return ResponseEntity.ok().body(gson.toJson(listOf100Transaction));
+				if (listOf100Transaction.size() > 0) {
+					return ResponseEntity.ok().body(gson.toJson(listOf100Transaction));
+				}
+				else {
+					return new ResponseEntity<>("No Transactions Found",HttpStatus.NOT_FOUND);
+				}
 			}
 			else {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("No Transactions Found",HttpStatus.NOT_FOUND);
 			}
 
 		} catch (Exception ex) {
@@ -89,9 +93,7 @@ public class TransactionController {
 			
 	        Random rand = new Random(); 
 
-	        
 			JsonObject response = new JsonObject();
-
 			final JsonObject balanceRequest = gson.fromJson(request, JsonObject.class);
 			String customerId = balanceRequest.get("customerId").getAsString();
 			String accountFrom = balanceRequest.get("accountFrom").getAsString();
@@ -171,7 +173,7 @@ public class TransactionController {
 				return ResponseEntity.ok().body(gson.toJson(listOf5Transactions));
 			}
 			else {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("No transactions found",HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception ex) {
 			logger.info("Exception {}", AppUtilities.getExceptionStacktrace(ex));
