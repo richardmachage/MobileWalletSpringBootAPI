@@ -51,6 +51,7 @@ public class AccountController {
 				response.addProperty("accountNo", account.get().getAccountNo() );
 				response.addProperty("customerId", account.get().getCustomerId() );
 				response.addProperty("balance", account.get().getBalance());
+				response.addProperty("id", account.get().getId());
 
 				//return new ResponseEntity<>(response , HttpStatus.OK);
 				return ResponseEntity.ok().body(gson.toJson(response));
